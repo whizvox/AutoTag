@@ -1,0 +1,9 @@
+# IntelliJ
+.idea
+build
+
+# Gradle
+.gradle
+
+# Debugging
+autotag.properties
