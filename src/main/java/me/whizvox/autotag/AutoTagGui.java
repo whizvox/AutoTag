@@ -29,7 +29,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.List;
-import java.util.regex.Pattern;
 
 public class AutoTagGui extends JFrame {
 
@@ -112,7 +111,7 @@ public class AutoTagGui extends JFrame {
           generator = new TagGenerator();
         } else if ("Object Count".equals(comboSplitCriteria.getSelectedItem())) {
           setObjectCountVisible(true);
-          generator = new ComboGenerator(getObjectCount());
+          generator = new ObjectCountGenerator(getObjectCount());
         } else {
           error("Invalid or implemented split criteria chosen <" + String.valueOf(comboSplitCriteria.getSelectedItem()) + ">. Please report this immediately.");
         }
@@ -362,7 +361,7 @@ public class AutoTagGui extends JFrame {
       File[] lfd;
       if (lf != null) {
         for (File dir : lf) {
-          lfd = dir.listFiles((d, name) -> Generator.isValidOsuFile(name) && StringUtils.containsIgnoreCase(name, query));
+          lfd = dir.listFiles((d, name) -> AutoTag.isValidOsuFile(name) && StringUtils.containsIgnoreCase(name, query));
           if (lfd != null) {
             Collections.addAll(res, lfd);
           }
@@ -416,8 +415,8 @@ public class AutoTagGui extends JFrame {
         if (generator instanceof TagGenerator) {
           TagGenerator g = (TagGenerator)generator;
           g.setOut(getNumDiffs());
-        } else if (generator instanceof ComboGenerator) {
-          ComboGenerator g = (ComboGenerator)generator;
+        } else if (generator instanceof ObjectCountGenerator) {
+          ObjectCountGenerator g = (ObjectCountGenerator)generator;
           g.setObjectsPerCombo(getObjectCount());
           g.setOut(getNumDiffs());
         }

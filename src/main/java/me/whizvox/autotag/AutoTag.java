@@ -18,18 +18,15 @@ package me.whizvox.autotag;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class AutoTag {
 
-  public static final int BUILD = 1;
-  public static final Date RELEASE_DATE = new Date(1530150480000L);
+  public static final int BUILD = 2;
+  public static final Date RELEASE_DATE = new Date(1530169126000L);
   public static final String VERSION = "1.0";
 
   public static void main(String[] args) {
@@ -63,23 +60,11 @@ public class AutoTag {
     return null;
   }
 
-  public static List<Path> searchBeatmaps(String osuDir, String query) throws IllegalArgumentException, IOException {
-    Path songsDir = Paths.get(osuDir, "Songs");
-    if (!Files.isDirectory(songsDir)) {
-      throw new IllegalArgumentException("Songs directory must not be a file");
-    }
-    if (!Files.exists(songsDir)) {
-      return new ArrayList<>(0);
-    }
-    return Files.walk(songsDir, 2)
-        .filter(path -> {
-          if (Files.isRegularFile(path)) {
-            final String name = path.getFileName().toString();
-            return Generator.isValidOsuFile(name) && StringUtils.containsIgnoreCase(name, query);
-          }
-          return false;
-        })
-        .collect(Collectors.toList());
+  private static final Pattern PATTERN_OSU_FILE = Pattern.compile(".* - .* \\(.*\\) \\[.*].osu");
+
+  public static boolean isValidOsuFile(String fileName) {
+    Matcher m = PATTERN_OSU_FILE.matcher(fileName);
+    return m.matches();
   }
 
 }

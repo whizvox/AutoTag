@@ -21,16 +21,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public class ComboGenerator extends Generator {
+public class ObjectCountGenerator extends Generator {
 
   private int objectsPerCombo;
 
-  public ComboGenerator(File in, List<File> out, int objectsPerCombo) {
+  public ObjectCountGenerator(File in, List<File> out, int objectsPerCombo) {
     super(in, out);
     this.objectsPerCombo = objectsPerCombo;
   }
 
-  public ComboGenerator(int objectsPerCombo) {
+  public ObjectCountGenerator(int objectsPerCombo) {
     super();
     this.objectsPerCombo = objectsPerCombo;
   }
@@ -56,15 +56,14 @@ public class ComboGenerator extends Generator {
     List<BufferedWriter> writers = new ArrayList<>(out.size());
     try {
       for (int i = 0; i < out.size(); i++) {
-        writers.add(i, new BufferedWriter(new FileWriter(out.get(i))));
+        writers.add(i, new BufferedWriter(new OutputStreamWriter(new FileOutputStream(out.get(i)), "UTF-8")));
       }
-      try (BufferedReader reader = new BufferedReader(new FileReader(in))) {
+      try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(in), "UTF-8"))) {
         boolean readingMetadata = false;
         boolean readingHitObjects = false;
         int currentIndex = 0;
         int currentObjectCount = 0;
         String line;
-        //int lineNumber = 1;
         List<String> tokens = new ArrayList<>();
         while ((line = reader.readLine()) != null) {
           if (!readingHitObjects) {
@@ -101,7 +100,6 @@ public class ComboGenerator extends Generator {
               }
             }
           }
-          //lineNumber++;
         }
       }
     } finally {
@@ -120,24 +118,10 @@ public class ComboGenerator extends Generator {
     return PATTERN_COMBO_DIFF;
   }
 
-  private static Pattern PATTERN_COMBO_DIFF = Pattern.compile(".*\\[(.* - COMBO[0-9]+)].osu$");
-
-  public static ComboGenerator create(File in, int objectsPerCombo, int numDifficulties) throws IllegalArgumentException {
-    if (objectsPerCombo < 1 || objectsPerCombo > 10000) {
-      throw new IllegalArgumentException("Objects per combo exceeds bounds [1, 10000]");
-    }
-    if (numDifficulties < 1 || numDifficulties > Generator.MAX_DIFFICULTIES) {
-      throw new IllegalArgumentException("Given number of difficulties <" + numDifficulties + "> exceeds bounds (1," + Generator.MAX_DIFFICULTIES + "]");
-    }
-    List<File> out = new ArrayList<>(numDifficulties);
-    for (int i = 0; i < numDifficulties; i++) {
-      out.add(i, new File(getAlteredFilePath(in.getAbsolutePath(), i + 1)));
-    }
-    return new ComboGenerator(in, out, objectsPerCombo);
-  }
+  private static Pattern PATTERN_COMBO_DIFF = Pattern.compile(".*\\[(.* - COUNT[0-9]+)].osu$");
 
   private static String getAlteredFilePath(String filePath, int index) {
-    return filePath.substring(0, filePath.lastIndexOf(']')) + " - COMBO" + index + "].osu";
+    return filePath.substring(0, filePath.lastIndexOf(']')) + " - COUNT" + index + "].osu";
   }
 
 }

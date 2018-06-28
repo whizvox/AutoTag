@@ -16,9 +16,9 @@
  */
 package me.whizvox.autotag;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public abstract class Generator {
@@ -54,18 +54,6 @@ public abstract class Generator {
   public abstract void generate() throws IOException;
 
   public abstract Pattern getFilePattern();
-
-  public final File[] getMatchingFiles(File dir) {
-    final Pattern ptrn = getFilePattern();
-    return dir.listFiles((d, name) -> ptrn.matcher(name).matches());
-  }
-
-  private static final Pattern PATTERN_OSU_FILE = Pattern.compile(".* - .* \\(.*\\) \\[.*].osu");
-
-  public static boolean isValidOsuFile(String fileName) {
-    Matcher m = PATTERN_OSU_FILE.matcher(fileName);
-    return m.matches();
-  }
 
   public static final int MAX_DIFFICULTIES = 5000;
 

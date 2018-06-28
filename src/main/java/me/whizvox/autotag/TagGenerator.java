@@ -44,9 +44,9 @@ public class TagGenerator extends Generator {
     List<BufferedWriter> writers = new ArrayList<>(out.size());
     try {
       for (int i = 0; i < out.size(); i++) {
-        writers.add(i, new BufferedWriter(new FileWriter(out.get(i))));
+        writers.add(i, new BufferedWriter(new OutputStreamWriter(new FileOutputStream(out.get(i)), "UTF-8")));
       }
-      try (BufferedReader reader = new BufferedReader(new FileReader(in))) {
+      try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(in), "UTF-8"))) {
         boolean readingMetadata = false;
         boolean readingHitObjects = false;
         // the first object has a new combo, so this will be set to 0
@@ -130,20 +130,6 @@ public class TagGenerator extends Generator {
   }
 
   private static Pattern PATTERN_TAG_DIFF = Pattern.compile(".*\\[(.* - PLAYER[0-9]+)].osu$");
-
-  public static TagGenerator create(File in, int numDifficulties) throws IOException, IllegalArgumentException {
-    if (in == null || !in.exists() || in.isDirectory()) {
-      throw new IOException("Input <" + String.valueOf(in) + "> must be a readable file");
-    }
-    if (numDifficulties < 1 || numDifficulties > Generator.MAX_DIFFICULTIES) {
-      throw new IllegalArgumentException("Given number of difficulties <" + numDifficulties + "> exceeds bounds (1," + Generator.MAX_DIFFICULTIES + "]");
-    }
-    List<File> out = new ArrayList<>(numDifficulties);
-    for (int i = 0; i < numDifficulties; i++) {
-      out.add(i, new File(getAlteredFilePath(in.getAbsolutePath(), i + 1)));
-    }
-    return new TagGenerator(in, out);
-  }
 
   private static String getAlteredFilePath(String filePath, int index) {
     return filePath.substring(0, filePath.lastIndexOf(']')) + " - PLAYER" + index + "].osu";
