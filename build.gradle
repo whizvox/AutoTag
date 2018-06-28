@@ -15,7 +15,7 @@
  * along with AutoTag. If not, see <https://www.gnu.org/licenses/>.
  */
 group 'me.whizvox.autotag'
-version '1.0-1'
+version '1.0-2'
 
 apply plugin: 'java'
 
